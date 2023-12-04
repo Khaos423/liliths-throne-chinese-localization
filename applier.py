@@ -539,6 +539,92 @@ class Applier:
             )
             translation += ";"
 
+
+        if (
+                original.endswith(",")
+                ^ translation.strip().endswith(",")
+                and not original.endswith(", // ...")
+        ):
+            logger.warning(
+                "\t****%s[%s]:翻译文本末尾%s逗号！|https://paratranz.cn/projects/%s/strings?text=%s",
+                file.as_posix(),
+                line,
+                "漏了"if original.endswith(",") else "多了",
+                PARATRANZ_PROJECT_ID,
+                quote(original),
+            )
+            if original.endswith(","):
+                translation = translation + ","
+            else:
+                translation = translation[:-1]
+        elif (
+                original.endswith(";")
+                ^ translation.strip().endswith(";")
+        ):
+            logger.warning(
+                "\t****%s[%s]:翻译文本末尾%s分号！|https://paratranz.cn/projects/%s/strings?text=%s",
+                file.as_posix(),
+                line,
+                "漏了" if original.endswith(";") else "多了",
+                PARATRANZ_PROJECT_ID,
+                quote(original),
+            )
+            if original.endswith(";"):
+                translation = translation + ";"
+            else:
+                translation = translation[:-1]
+        elif (
+            original.startswith("+")
+            ^ translation.strip().startswith("+")
+            and not translation.startswith("//")
+            and not translation.startswith("\"对<span style=")
+        ):
+            logger.warning(
+                "\t****%s[%s]:翻译文本开头%s加号！|https://paratranz.cn/projects/%s/strings?text=%s",
+                file.as_posix(),
+                line,
+                "漏了" if original.startswith("+") else "多了",
+                PARATRANZ_PROJECT_ID,
+                quote(original),
+            )
+            if original.startswith("+"):
+                translation = "+" + translation
+            else:
+                translation = translation[1:]
+
+        if ".speak" in translation or "］" in translation:
+            if ".speaking" in translation:
+                logger.warning(
+                    "\t****%s[%s]:翻译文本包含.speaking！|https://paratranz.cn/projects/%s/strings?text=%s",
+                    file.as_posix(),
+                    line,
+                    PARATRANZ_PROJECT_ID,
+                    quote(original),
+                )
+                translation = translation.replace(".speaking", ".speech")
+            elif ".speak" in translation:
+                logger.warning(
+                    "\t****%s[%s]:翻译文本包含.speak！|https://paratranz.cn/projects/%s/strings?text=%s",
+                    file.as_posix(),
+                    line,
+                    PARATRANZ_PROJECT_ID,
+                    quote(original),
+                )
+                translation = translation.replace(".speak", ".speech")
+            else:
+                logger.warning(
+                    "\t****%s[%s]:翻译文本包含大方括号！|https://paratranz.cn/projects/%s/strings?text=%s",
+                    file.as_posix(),
+                    line,
+                    PARATRANZ_PROJECT_ID,
+                    quote(original),
+                )
+                translation = translation.replace("］", "]")
+
+        self.symbol_difference_match(translation, original, "[", "]", "方括号", file, line)
+        self.symbol_difference_match(translation, original, "(", ")", "圆括号", file, line)
+        self.symbol_difference_match(translation, original, "\"", "\"", "双引号", file, line)
+
         index = text.find(original)
         if index == -1:
             logger.warning("\t****原文本无匹配！")
@@ -546,6 +632,24 @@ class Applier:
         else:
             text = text[:index] + translation + text[index + len(original) :]
             return text
+
+    @staticmethod
+    def symbol_difference_match(translation: str, original: str, symbol_left: str, symbol_right: str, symbol_cn: str, file: Path, line: int):
+        symbol_difference = original.count(symbol_left) + original.count(symbol_right) - translation.count(symbol_left) - translation.count(symbol_right)
+        if symbol_left == symbol_right:
+            symbol_difference /= 2
+        # 筛掉误伤
+        if "They [style.boldBad(block" in original or "name = name.replace(" in translation:
+            symbol_difference = 0
+        if symbol_difference % 2 == 1:
+            logger.warning(
+                "\t****%s[%s]:翻译文本%s不匹配！|https://paratranz.cn/projects/%s/strings?text=%s",
+                file.as_posix(),
+                line,
+                symbol_cn,
+                PARATRANZ_PROJECT_ID,
+                quote(original),
+            )
 
 
 if __name__ == "__main__":

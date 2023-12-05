@@ -384,12 +384,15 @@ class Applier:
             if file.name == "eisek_mob_hideout.xml":
                 with open(file, mode="r", encoding="utf-8") as f:
                     line = f.read()
-                with open(Path(ROOT_DIR) / SVG_DIR / "eisek_mob_hideout.svg", "r", encoding="utf-8") as f:
+                with open(
+                    Path(ROOT_DIR) / SVG_DIR / "eisek_mob_hideout.svg",
+                    "r",
+                    encoding="utf-8",
+                ) as f:
                     svg = f.read()
                 new_line = re.sub(r"(<svg.*</svg>)", svg, line, flags=re.DOTALL)
                 with open(file, mode="w", encoding="utf-8") as f:
                     f.write(new_line)
-
 
     def apply_res(self) -> None:
         original_files = [file for file in self.root.glob("**/*.xml")]
@@ -498,7 +501,7 @@ class Applier:
                 "\t****%s[%s]:翻译文本有奇数个双引号！|https://paratranz.cn/projects/%s/strings?text=%s",
                 file.as_posix(),
                 line,
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             print(text)
@@ -507,7 +510,7 @@ class Applier:
                 "\t****%s[%s]:翻译文本有额外换行符！|https://paratranz.cn/projects/%s/strings?text=%s",
                 file.as_posix(),
                 line,
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             translation = translation.replace("\\n", "")
@@ -521,7 +524,7 @@ class Applier:
                 "\t****%s[%s]:翻译文本末尾无逗号！|https://paratranz.cn/projects/%s/strings?text=%s",
                 file.as_posix(),
                 line,
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             translation += ","
@@ -534,7 +537,7 @@ class Applier:
                 "\t****%s[%s]:翻译文本末尾无分号！|https://paratranz.cn/projects/%s/strings?text=%s",
                 file.as_posix(),
                 line,
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             translation += ";"

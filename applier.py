@@ -553,7 +553,7 @@ class Applier:
                 file.as_posix(),
                 line,
                 "漏了"if original.endswith(",") else "多了",
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             if original.endswith(","):
@@ -569,7 +569,7 @@ class Applier:
                 file.as_posix(),
                 line,
                 "漏了" if original.endswith(";") else "多了",
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             if original.endswith(";"):
@@ -587,7 +587,7 @@ class Applier:
                 file.as_posix(),
                 line,
                 "漏了" if original.startswith("+") else "多了",
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
             if original.startswith("+"):
@@ -601,7 +601,7 @@ class Applier:
                     "\t****%s[%s]:翻译文本包含.speaking！|https://paratranz.cn/projects/%s/strings?text=%s",
                     file.as_posix(),
                     line,
-                    PARATRANZ_PROJECT_ID,
+                    PARATRANZ_PROJECT_ID[self.target],
                     quote(original),
                 )
                 translation = translation.replace(".speaking", ".speech")
@@ -610,7 +610,7 @@ class Applier:
                     "\t****%s[%s]:翻译文本包含.speak！|https://paratranz.cn/projects/%s/strings?text=%s",
                     file.as_posix(),
                     line,
-                    PARATRANZ_PROJECT_ID,
+                    PARATRANZ_PROJECT_ID[self.target],
                     quote(original),
                 )
                 translation = translation.replace(".speak", ".speech")
@@ -619,7 +619,7 @@ class Applier:
                     "\t****%s[%s]:翻译文本包含大方括号！|https://paratranz.cn/projects/%s/strings?text=%s",
                     file.as_posix(),
                     line,
-                    PARATRANZ_PROJECT_ID,
+                    PARATRANZ_PROJECT_ID[self.target],
                     quote(original),
                 )
                 translation = translation.replace("］", "]")
@@ -650,7 +650,7 @@ class Applier:
                 file.as_posix(),
                 line,
                 symbol_cn,
-                PARATRANZ_PROJECT_ID,
+                PARATRANZ_PROJECT_ID[self.target],
                 quote(original),
             )
 
